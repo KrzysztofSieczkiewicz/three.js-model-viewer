@@ -1,4 +1,5 @@
-import * as THREE from '../node_modules/three/build/three.module.js'
+import * as THREE from 'three'
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 
 // Scene
 const scene = new THREE.Scene
@@ -27,7 +28,6 @@ scene.add(light)
 // Camera
 const camera = new THREE.PerspectiveCamera(45, sizes.width / sizes.height, 0.1, 100)
 camera.position.z = 20
-
 scene.add(camera)
 
 // Call renderer
@@ -35,9 +35,16 @@ const canvas = document.querySelector('.webGL')
 const renderer = new THREE.WebGLRenderer({canvas})
 
 renderer.setSize(sizes.width, sizes.height)
+renderer.setPixelRatio(2)
 renderer.render(scene, camera)
 
-
+// Controls
+const controls = new OrbitControls(camera, canvas)
+controls.enableDamping = true
+// temp => to be removed later {
+controls.enablePan = false
+controls.enableZoom = false
+// }
 
 //// Resize
 window.addEventListener('resize', () => {
@@ -51,6 +58,7 @@ window.addEventListener('resize', () => {
 })
 
 const loop = () => {
+  controls.update()
   renderer.render(scene, camera)
   window.requestAnimationFrame(loop)
 }
