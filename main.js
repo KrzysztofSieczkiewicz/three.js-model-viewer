@@ -1,23 +1,57 @@
-import './style.css'
-import javascriptLogo from './javascript.svg'
-import { setupCounter } from './counter.js'
+import * as THREE from '../node_modules/three/build/three.module.js'
 
-document.querySelector('#app').innerHTML = `
-  <div>
-    <a href="https://vitejs.dev" target="_blank">
-      <img src="/vite.svg" class="logo" alt="Vite logo" />
-    </a>
-    <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript" target="_blank">
-      <img src="${javascriptLogo}" class="logo vanilla" alt="JavaScript logo" />
-    </a>
-    <h1>Hello Vite!</h1>
-    <div class="card">
-      <button id="counter" type="button"></button>
-    </div>
-    <p class="read-the-docs">
-      Click on the Vite logo to learn more
-    </p>
-  </div>
-`
+// Scene
+const scene = new THREE.Scene
 
-setupCounter(document.querySelector('#counter'))
+// Create basic shape
+const geometry = new THREE.SphereGeometry(3, 64, 64)
+const material = new THREE.MeshStandardMaterial({
+  color: '#00ff83',
+  roughness: '0.5'
+})
+
+// Sizes
+const sizes = {
+  width: window.innerWidth,
+  height: window.innerHeight
+}
+
+const mesh = new THREE.Mesh(geometry, material)
+scene.add(mesh)
+
+// Light
+const light = new THREE.PointLight(0xffffff, 1, 100)
+light.position.set(0, 10, 10)
+scene.add(light)
+
+// Camera
+const camera = new THREE.PerspectiveCamera(45, sizes.width / sizes.height, 0.1, 100)
+camera.position.z = 20
+
+scene.add(camera)
+
+// Call renderer
+const canvas = document.querySelector('.webGL')
+const renderer = new THREE.WebGLRenderer({canvas})
+
+renderer.setSize(sizes.width, sizes.height)
+renderer.render(scene, camera)
+
+
+
+//// Resize
+window.addEventListener('resize', () => {
+  sizes.width = window.innerWidth
+  sizes.height = window.innerHeight
+
+  //update cam and scene
+  camera.aspect = sizes.width / sizes.height
+  camera.updateProjectionMatrix()
+  renderer.setSize(sizes.width, sizes.height)
+})
+
+const loop = () => {
+  renderer.render(scene, camera)
+  window.requestAnimationFrame(loop)
+}
+loop()
